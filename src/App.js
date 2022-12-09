@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [ingredientQuery, setIngredientQuery] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -27,6 +28,8 @@ const App = () => {
   const navigator = useNavigate();
 
   const inputField = useRef();
+
+  const inputIngredient = useRef();
 
   const searchHandler = (e) => {
     e.preventDefault();
@@ -57,6 +60,38 @@ const App = () => {
 
     setSearchQuery("");
   };
+
+  const ingredientHandler = (e) => {
+    e.preventDefault();
+
+    inputField.current.blur();
+
+    navigator("/");
+
+    setIsLoading(true);
+    setRecipes([]);
+    setErrorMsg("");
+    setEmptyArray("");
+    setStable("");
+
+    setTimeout(() => {
+      fetch(`http://127.0.0.1:9000/recipesWithIngredients?ingredients=${ingredientQuery}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Something went wrong!");
+          return res.json();
+        })
+        .then((data) => {
+          if (data.results.length === 0) setEmptyArray("No recipe found!");
+          setRecipes(data.results);
+          setIsLoading(false);
+        })
+        .catch((err) => setErrorMsg(err.message));
+    }, 500);
+
+    setIngredientQuery("");
+  };
+
+
 
   const checkLocalData = (data) => {
     const localData = JSON.parse(localStorage.getItem("recipes"));
@@ -94,7 +129,13 @@ const App = () => {
           searchHandler={searchHandler}
           inputField={inputField}
           saveCount={saveCount}
+          ingredientQuery={ingredientQuery}
+          setIngredientQuery={setIngredientQuery}
+          ingredientHandler={ingredientHandler}
+          inputIngredient={inputIngredient}
         />
+
+
         <Routes>
           <Route
             path="/"
@@ -109,6 +150,9 @@ const App = () => {
               />
             }
           />
+          
+
+
           <Route
             path="recipe-item/:id"
             element={

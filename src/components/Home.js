@@ -2,6 +2,7 @@ import Recipe from "./Recipe";
 import { CgSpinner } from "react-icons/cg";
 import FryingPan from "./FryingPan";
 
+
 const Home = ({ recipes, isLoading, errorMsg, emptyArray, stable }) => {
   return (
     <div className="container mx-auto py-8 flex flex-wrap gap-10 justify-center">
