@@ -11,7 +11,7 @@ const Navbar = ({ saveCount }) => {
 
   return (
     <nav className="flex justify-between items-center container mx-auto py-8 flex-col lg:flex-row gap-5 lg:gap-0">
-      <h2 className="text-2xl font-bold lowercase italic">
+      <h2 className="text-2xl font-bold italic">
         Recipe<span className="text-rose-500">Pad</span>
       </h2>
       {/* <form onSubmit={searchHandler}>
@@ -62,12 +62,13 @@ const Navbar = ({ saveCount }) => {
             className="text-gray-400 hover:text-gray-600 duration-300"
             style={navActive}
           >
-            Favourites{" "}
+             Favourites{" "}
             <span className="font-bold text-sky-400">({saveCount})</span>
           </NavLink>
         </li>
       </ul>
     </nav>
+    
   );
 };
 
