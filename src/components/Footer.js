@@ -5,7 +5,30 @@ const Footer = () => {
         Recipe<span className="text-rose-500">Pad</span>
       </h2>
       {/* <p>&copy; {new Date().getFullYear()} RecipePad. All rights reserved.</p> */}
-      <p>Made with love by</p>
+      <p>
+        Made by&nbsp;
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/ShivayBhandari"
+        >
+          Shivay Bhandari
+        </a>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/TarunSehgal27/"
+        >
+          , Tarun Sehgal and&nbsp;
+        </a>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/Raghav0001-malhotra"
+        >
+          Raghav Malhotra
+        </a>
+      </p>
     </footer>
   );
 };

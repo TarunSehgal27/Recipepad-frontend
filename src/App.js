@@ -1,21 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./components/Home";
+import RecipeSearch from "./components/pages/RecipeSearch";
+import IngredientRecipeSearch from "./components/pages/IngredientRecipeSearch";
+//import Login from "./components/pages/Login";
 import RecipeItem from "./components/RecipeItem";
 import Favourites from "./components/Favourites";
-import NotFound from "./components/NotFound";
+import NotFound from "./components/pages/NotFound";
 import Footer from "./components/Footer";
 
 const App = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [recipes, setRecipes] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [emptyArray, setEmptyArray] = useState("");
-  const [stable, setStable] = useState(
-    "Nothing to show, please search something!"
-  );
   const [savedItems, setSavedItems] = useState(() => {
     const localData = localStorage.getItem("recipes");
     return localData ? JSON.parse(localData) : [];
@@ -25,38 +19,6 @@ const App = () => {
   });
 
   const navigator = useNavigate();
-
-  const inputField = useRef();
-
-  const searchHandler = (e) => {
-    e.preventDefault();
-
-    inputField.current.blur();
-
-    navigator("/");
-
-    setIsLoading(true);
-    setRecipes([]);
-    setErrorMsg("");
-    setEmptyArray("");
-    setStable("");
-
-    setTimeout(() => {
-      fetch(`http://127.0.0.1:9000/recipesWithSearch?query=${searchQuery}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Something went wrong!");
-          return res.json();
-        })
-        .then((data) => {
-          if (data.results.length === 0) setEmptyArray("No recipe found!");
-          setRecipes(data.results);
-          setIsLoading(false);
-        })
-        .catch((err) => setErrorMsg(err.message));
-    }, 500);
-
-    setSearchQuery("");
-  };
 
   const checkLocalData = (data) => {
     const localData = JSON.parse(localStorage.getItem("recipes"));
@@ -88,29 +50,21 @@ const App = () => {
   return (
     <>
       <div className="bg-rose-50 text-gray-600 text-lg min-h-screen">
-        <Navbar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          searchHandler={searchHandler}
-          inputField={inputField}
-          saveCount={saveCount}
-        />
+        <Navbar saveCount={saveCount} />
         <Routes>
+          <Route path="/" element={<RecipeSearch />} />
           <Route
-            path="/"
-            element={
-              <Home
-                recipes={recipes}
-                isLoading={isLoading}
-                errorMsg={errorMsg}
-                searchQuery={searchQuery}
-                emptyArray={emptyArray}
-                stable={stable}
-              />
-            }
+            path="ingredient-search"
+            element={<IngredientRecipeSearch />}
           />
           <Route
             path="recipe-item/:id"
+            element={
+              <RecipeItem saveHandler={saveHandler} savedItems={savedItems} />
+            }
+          />
+          <Route
+            path="ingredient-search/recipe-item/:id"
             element={
               <RecipeItem saveHandler={saveHandler} savedItems={savedItems} />
             }
@@ -125,6 +79,8 @@ const App = () => {
             path="favourites"
             element={<Favourites savedItems={savedItems} />}
           />
+
+          {/* <Route path="login" element={<Login />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

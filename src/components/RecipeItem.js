@@ -7,6 +7,7 @@ import { CgSpinner } from "react-icons/cg";
 
 const RecipeItem = ({ saveHandler, savedItems }) => {
   const [recipe, setRecipe] = useState("");
+  const [recipeNutrients, setRecipeNutrients] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [hasBeenSaved, setHasBeenSaved] = useState(null);
@@ -19,11 +20,15 @@ const RecipeItem = ({ saveHandler, savedItems }) => {
     setIsLoading(true);
     setErrorMsg("");
     setRecipe("");
+    setRecipeNutrients("");
 
     setTimeout(() => {
       fetch(`http://127.0.0.1:9000/recipeInformation/${id}`)
         .then((res) => {
-          if (!res.ok) throw new Error("Something went wrongggg!");
+          if (!res.ok)
+            throw new Error(
+              "Something went wrong fetching recipe information!"
+            );
           return res.json();
         })
         .then((data) => {
@@ -31,7 +36,19 @@ const RecipeItem = ({ saveHandler, savedItems }) => {
           setIsLoading(false);
         })
         .catch((err) => setErrorMsg(err.message));
+
+      fetch(`http://127.0.0.1:9000/recipeNutrients/${id}`)
+        .then((res) => {
+          if (!res.ok)
+            throw new Error("Something went wrong fetching recipe nutrients!");
+          return res.json();
+        })
+        .then((data) => {
+          setRecipeNutrients(data);
+        })
+        .catch((err) => setErrorMsg(err.message));
     }, 500);
+    // eslint-disable-next-line
   }, []);
 
   const timeFormatter = (time) => {
@@ -49,6 +66,7 @@ const RecipeItem = ({ saveHandler, savedItems }) => {
   useEffect(() => {
     if (!recipe) return;
     setHasBeenSaved(savedItems.some((item) => item.id === recipe.id));
+    // eslint-disable-next-line
   }, [recipe]);
 
   return (
@@ -107,13 +125,63 @@ const RecipeItem = ({ saveHandler, savedItems }) => {
               >
                 Go Back
               </button>
-              <a
+              {/* <a
                 href={recipe.spoonacularSourceUrl}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="bg-sky-400 text-sky-50 p-3 px-8 rounded-full uppercase shadow-lg shadow-sky-200 hover:bg-gray-600 hover:text-gray-50 hover:shadow-gray-300 duration-300"
               >
                 Get Directions
-              </a>
+              </a> */}
+            </div>
+            <div>
+              <span>
+                {recipe.vegetarian ? (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    vegetarian
+                  </span>
+                ) : (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    non-vegetarian
+                  </span>
+                )}
+              </span>{" "}
+              <span>
+                {recipe.vegan ? (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    vegan
+                  </span>
+                ) : (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    non-vegan
+                  </span>
+                )}
+              </span>{" "}
+              <span>
+                {recipe.glutenFree ? (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    glutenfree
+                  </span>
+                ) : (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    contains-gluten
+                  </span>
+                )}
+              </span>{" "}
+              <span>
+                {recipe.dairyFree ? (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    dairyfree
+                  </span>
+                ) : null}
+              </span>{" "}
+              <span>
+                {recipe.veryHealthy ? (
+                  <span className="bg-sky-400 text-sky-50 p-1 px-2 rounded-full">
+                    veryhealthy
+                  </span>
+                ) : null}
+              </span>{" "}
             </div>
           </div>
           <div className="overflow-hidden flex justify-center items-center lg:h-96 rounded-xl">
@@ -140,11 +208,44 @@ const RecipeItem = ({ saveHandler, savedItems }) => {
                   >
                     <TiTick className="inline-block" />
                     <span>
-                      {ing.amount && ing.amount}
-                      {ing.unit && ing.unit} {ing.name && ing.name}
+                      {ing.amount && ing.amount} {ing.unit && ing.unit}{" "}
+                      {ing.name && ing.name}
                     </span>{" "}
                   </p>
                 ))}
+              <br />
+              <h2 className="text-2xl lg:text-4xl flex items-center gap-3 font-medium mb-5">
+                <span className="text-rose-500">
+                  <GiKnifeFork />
+                </span>{" "}
+                Instructions:
+              </h2>
+              <br />
+              <p className="leading-loose">{recipe.instructions}</p>
+              <br />
+              <h2 className="text-2xl lg:text-4xl flex items-center gap-3 font-medium mb-5">
+                <span className="text-rose-500">
+                  <GiKnifeFork />
+                </span>{" "}
+                Plan Meal With Nutrients:
+              </h2>
+
+              <p className="leading-loose">
+                <TiTick className="inline-block" />
+                <span>Calories: {recipeNutrients.calories}</span>
+              </p>
+              <p className="leading-loose">
+                <TiTick className="inline-block" />
+                <span>Carbs: {recipeNutrients.carbs}</span>
+              </p>
+              <p className="leading-loose">
+                <TiTick className="inline-block" />
+                <span>Fat: {recipeNutrients.fat}</span>
+              </p>
+              <p className="leading-loose">
+                <TiTick className="inline-block" />
+                <span>Protein: {recipeNutrients.protein}</span>
+              </p>
             </div>
           </div>
         </div>
