@@ -73,7 +73,7 @@ const IngredientRecipeSearch = () => {
         <form onSubmit={ingredientSearchHandler}>
           <input
             ref={ingredientInputField}
-            value={ingredientSearchQuery}
+            
             onChange={(e) => setIngredientSearchQuery(e.target.value)}
             type="search"
             required
